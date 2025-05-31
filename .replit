@@ -1,4 +1,4 @@
-entrypoint = "main.py"
+entrypoint = "blackbeard_bot.py"
 modules = ["python-3.11"]
 
 [nix]
@@ -11,5 +11,5 @@ language = "python3"
 requiredFiles = [".replit", "replit.nix"]
 
 [deployment]
-run = ["python3", "main.py"]
+run = ["python3", "blackbeard_bot.py"]
 deploymentTarget = "cloudrun"
