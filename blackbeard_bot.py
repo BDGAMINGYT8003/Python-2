@@ -1,6 +1,8 @@
 
 import os
 import asyncio
+import requests
+import json
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import google.generativeai as genai
@@ -26,9 +28,18 @@ def generate_pirate_response(user_input: str) -> str:
         "Keep your responses relatively concise but flavorful. Never break character, not even for a king's ransom! "
         "Now, respond to this query from the user:\n"
     )
+    
     try:
-        model = genai.GenerativeModel('gemini-pro')
-        response = model.generate_content(system_prompt + user_input)
+        model = genai.GenerativeModel('gemini-2.0-flash-lite')
+        
+        # Create the request in the format matching your curl example
+        response = model.generate_content(
+            system_prompt + user_input,
+            generation_config={
+                "max_output_tokens": 1000,
+                "response_mime_type": "text/plain"
+            }
+        )
         return response.text
     except Exception as e:
         print(f"Error generating response from Gemini: {e}")
