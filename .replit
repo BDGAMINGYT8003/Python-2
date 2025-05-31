@@ -15,7 +15,7 @@ run = ["python3", "blackbeard_bot.py"]
 deploymentTarget = "cloudrun"
 
 [workflows]
-runButton = "Run Blackbeard Bot"
+runButton = "Run Supercharged Bot"
 
 [[workflows.workflow]]
 name = "Run Blackbeard Bot"
@@ -25,6 +25,19 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python blackbeard_bot.py"
+
+[[workflows.workflow]]
+name = "Run Supercharged Bot"
+author = 37077700
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node bot.js"
 
 [[ports]]
 localPort = 5000

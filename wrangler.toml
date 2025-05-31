@@ -1,0 +1,11 @@
+
+name = "blackbeard-bot"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "blackbeard-bot-production"
+
+[[env.production.vars]]
+TELEGRAM_BOT_TOKEN = "7947606721:AAGxfrYl1HI86IRkYKbIyhwkmq4cu2Pb-vo"
+GEMINI_API_KEY = "AIzaSyCL0lyAzof7p-R8d8QhExCwNWiZE0WiaXQ"
