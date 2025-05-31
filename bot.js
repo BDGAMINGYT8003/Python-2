@@ -7,7 +7,7 @@ const fs = require('fs');
 // Using built-in fetch (available in Node.js 18+)
 
 // Hardcoded credentials as specified
-const TELEGRAM_BOT_TOKEN = "7947606721:AAGxfrYl1HI86IRkYKbIyhwkmq4cu2Pb-vo";
+const TELEGRAM_BOT_TOKEN = "7932939642:AAHJGbqUb1ojESr9eMCvwXEobeGGpVznwC4";
 const GEMINI_API_KEY = "AIzaSyCL0lyAzof7p-R8d8QhExCwNWiZE0WiaXQ";
 
 // Optimized bot configuration
