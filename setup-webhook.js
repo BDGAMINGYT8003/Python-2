@@ -7,10 +7,8 @@ async function setupWebhook() {
   const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
   
   try {
-    // Get your Repl URL - replace with your actual URL
-    const webhookUrl = process.env.REPL_SLUG ? 
-      `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/webhook` :
-      'https://your-actual-repl-url.repl.co/webhook';
+    // Get your Repl URL - use the correct Replit format
+    const webhookUrl = `https://${process.env.REPLIT_DEV_DOMAIN || 'your-repl-name.your-username.repl.co'}/webhook`;
     
     console.log(`Setting webhook to: ${webhookUrl}`);
     

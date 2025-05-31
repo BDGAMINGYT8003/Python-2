@@ -216,10 +216,8 @@ Respond to: ${userInput}`;
 // Webhook setup function
 async function setupWebhook() {
   try {
-    // For local development on Replit, use the public URL
-    const webhookUrl = process.env.REPL_SLUG ? 
-      `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/webhook` :
-      'https://your-repl-url.repl.co/webhook';
+    // Use the correct Replit URL format
+    const webhookUrl = `https://${process.env.REPLIT_DEV_DOMAIN || 'your-repl-name.your-username.repl.co'}/webhook`;
     
     await bot.setWebHook(webhookUrl);
     console.log(`🌐 Webhook set to: ${webhookUrl}`);
