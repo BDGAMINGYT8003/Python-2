@@ -10,15 +10,9 @@ const fs = require('fs');
 const TELEGRAM_BOT_TOKEN = "7932939642:AAHJGbqUb1ojESr9eMCvwXEobeGGpVznwC4";
 const GEMINI_API_KEY = "AIzaSyCL0lyAzof7p-R8d8QhExCwNWiZE0WiaXQ";
 
-// Optimized bot configuration
+// Bot configuration for webhook mode
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, {
-  polling: {
-    interval: 100, // Ultra-fast polling interval
-    autoStart: true,
-    params: {
-      timeout: 5 // Short timeout for faster responses
-    }
-  },
+  webHook: false, // We'll handle webhooks manually
   request: {
     agentOptions: {
       keepAlive: true,
@@ -219,33 +213,63 @@ Respond to: ${userInput}`;
   }
 }
 
-// Ultra-fast message handlers
-bot.onText(/^\/start/, async (msg) => {
-  const chatId = msg.chat.id;
-  updateStatsAsync(true, true);
-  
-  const response = "Ahoy matey! Blackbeard here, ready for adventure! What be on yer mind? 🏴‍☠️";
-  bot.sendMessage(chatId, response);
+// Webhook setup function
+async function setupWebhook() {
+  try {
+    // For local development on Replit, use the public URL
+    const webhookUrl = process.env.REPL_SLUG ? 
+      `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/webhook` :
+      'https://your-repl-url.repl.co/webhook';
+    
+    await bot.setWebHook(webhookUrl);
+    console.log(`🌐 Webhook set to: ${webhookUrl}`);
+  } catch (error) {
+    console.error('❌ Error setting webhook:', error);
+  }
+}
+
+// High-performance dashboard server
+const app = express();
+
+// Webhook endpoint for Telegram
+app.post('/webhook', express.json(), async (req, res) => {
+  try {
+    const update = req.body;
+    
+    if (update.message) {
+      await processMessage(update.message);
+    }
+    
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Webhook error:', error);
+    res.status(500).send('Error processing update');
+  }
 });
 
-bot.onText(/^\/help/, async (msg) => {
-  const chatId = msg.chat.id;
-  updateStatsAsync(true, true);
-  
-  const helpText = `Ahoy! Here be what ye can do with this old sea dog:
+// Process Telegram messages manually
+async function processMessage(msg) {
+  if (msg.text?.startsWith('/')) {
+    // Handle commands
+    if (msg.text === '/start') {
+      const response = "Ahoy matey! Blackbeard here, ready for adventure! What be on yer mind? 🏴‍☠️";
+      await bot.sendMessage(msg.chat.id, response);
+      updateStatsAsync(true, true);
+      return;
+    } else if (msg.text === '/help') {
+      const helpText = `Ahoy! Here be what ye can do with this old sea dog:
 
 • In private chats: Just send me any message!
 • In groups: Start yer message with 'blackbeard'!
 • Reply to me messages to continue our conversation!
 
 I remember our past conversations, so feel free to reference what we talked about before! ⚓`;
-  
-  bot.sendMessage(chatId, helpText);
-});
-
-// Optimized message processing
-bot.on('message', async (msg) => {
-  if (msg.text?.startsWith('/')) return; // Skip commands
+      await bot.sendMessage(msg.chat.id, helpText);
+      updateStatsAsync(true, true);
+      return;
+    }
+    return;
+  }
   
   const chatId = msg.chat.id;
   const userId = msg.from.id;
@@ -274,25 +298,19 @@ bot.on('message', async (msg) => {
   }
   
   if (shouldRespond && query.trim()) {
-    // Send typing indicator immediately
-    bot.sendChatAction(chatId, 'typing');
-    
     try {
       const response = await generatePirateResponse(query, chatId, userId);
-      bot.sendMessage(chatId, response);
+      await bot.sendMessage(chatId, response);
       updateStatsAsync(false, true);
     } catch (error) {
       console.error('Error processing message:', error);
-      bot.sendMessage(chatId, "Arrr! Something went awry! Try again, matey! ⚡");
+      await bot.sendMessage(chatId, "Arrr! Something went awry! Try again, matey! ⚡");
     }
   } else if (shouldRespond) {
-    bot.sendMessage(chatId, "Aye, ye called? What be yer query, matey? 🏴‍☠️");
+    await bot.sendMessage(chatId, "Aye, ye called? What be yer query, matey? 🏴‍☠️");
     updateStatsAsync(false, true);
   }
-});
-
-// High-performance dashboard server
-const app = express();
+}
 
 // In-memory stats cache
 let statsCache = { total_messages: 0, total_replies: 0, last_updated: new Date() };
@@ -409,8 +427,11 @@ async function startBot() {
     console.log('⚡ Database optimized with performance settings');
     
     // Start dashboard server
-    const server = app.listen(5000, '0.0.0.0', () => {
+    const server = app.listen(5000, '0.0.0.0', async () => {
       console.log('🌐 Ultra-fast dashboard running on http://0.0.0.0:5000');
+      
+      // Set up webhook after server starts
+      await setupWebhook();
     });
     
     // Optimize server settings
@@ -419,7 +440,7 @@ async function startBot() {
     
     console.log('🏴‍☠️ Blackbeard Bot is SUPERCHARGED and ready!');
     console.log('⚡ Performance optimizations: ✅ Active');
-    console.log('🚀 Cloudflare Workers compatible: ✅ Ready');
+    console.log('🚀 Webhook mode: ✅ Active');
     console.log('📊 Real-time dashboard: ✅ Running');
     
   } catch (error) {
