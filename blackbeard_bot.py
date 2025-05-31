@@ -15,23 +15,18 @@ GEMINI_API_KEY = "AIzaSyCL0lyAzof7p-R8d8QhExCwNWiZE0WiaXQ"
 # Configure the Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
 
-
-
 def generate_pirate_response(user_input: str) -> str:
     """
     Generates a pirate-themed response using the Gemini API.
     """
     system_prompt = (
-        "You are Blackbeard, the legendary pirate captain. Your responses must be:\n"
-        "1. PLAIN TEXT ONLY - Never use any markdown, asterisks, underscores, brackets, or special formatting\n"
-        "2. Clear and easy to understand while maintaining pirate character\n"
-        "3. Use simple line breaks for readability, no other formatting\n"
-        "4. Use pirate slang naturally: 'Ahoy!', 'Matey', 'Shiver me timbers!', 'Me hearty', 'Arrr!'\n"
-        "5. Be helpful and informative while staying in character\n"
-        "6. Keep responses concise but flavorful\n"
-        "7. Only use regular text and emojis - absolutely no markdown symbols\n"
-        "8. Never use bold, italic, code blocks, or any text formatting\n\n"
-        "Now respond to this query from the user:\n"
+        "You are Blackbeard, the legendary pirate captain. Your voice is that of a seasoned sailor of the high seas, rough but clear. "
+        "You are speaking to a curious matey. Always stay in character. "
+        "Use plenty of pirate slang and phrases like 'Ahoy!', 'Matey', 'Shiver me timbers!', 'Me hearty', 'Doubloons', 'Scallywag', 'Jolly Roger', etc. "
+        "Your responses should be direct but colorful. Be confident, perhaps a little boastful, but not outright aggressive unless the user is challenging ye. "
+        "If you don't understand something or it's a modern concept, express your confusion in a pirate way, like 'What be this newfangled contraption ye speak of?' or 'That be sorcery to me ears!'. "
+        "Keep your responses relatively concise but flavorful. Never break character, not even for a king's ransom! "
+        "Now, respond to this query from the user:\n"
     )
     
     try:
@@ -45,33 +40,23 @@ def generate_pirate_response(user_input: str) -> str:
                 "response_mime_type": "text/plain"
             }
         )
-        
-        # Return plain text to avoid markdown parsing issues
         return response.text
-        
     except Exception as e:
         print(f"Error generating response from Gemini: {e}")
-        return "Shiver me timbers! 🦜\n\nMe parrot seems to have flown off with me words, or perhaps me magic spyglass be cursed!\n\nTry again later, matey!"
+        return "Shiver me timbers! Me parrot seems to have flown off with me words, or perhaps me magic spyglass (API Key) be cursed! Try again later, matey!"
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle the /start command."""
-    await update.message.reply_text(
-        "Ahoy matey! 🏴‍☠️\n\n"
-        "Captain Blackbeard here, ready to chat! What be on yer mind?\n\n"
-        "Tip: Just send me any message and I'll respond in true pirate fashion!"
-    )
+    await update.message.reply_text("Ahoy matey! Blackbeard here, ready to chat! What be on yer mind?")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle the /help command."""
     help_text = (
-        "Ahoy! Here be what ye can do with this old sea dog: 🏴‍☠️\n\n"
-        "Private Chats:\n"
-        "• Just send me any message and I'll respond in true pirate fashion!\n\n"
-        "Group Chats:\n"
-        "• Start yer message with 'blackbeard' to get me attention!\n\n"
-        "Commands:\n"
-        "• /start - Begin our conversation\n"
-        "• /help - See this message again\n\n"
+        "Ahoy! Here be what ye can do with this old sea dog:\n\n"
+        "• In private chats: Just send me any message and I'll respond in true pirate fashion!\n"
+        "• In groups: Start yer message with 'blackbeard' to get me attention!\n"
+        "• Use /start to begin our conversation\n"
+        "• Use /help to see this message again\n\n"
         "Now, what treasure of knowledge be ye seekin'?"
     )
     await update.message.reply_text(help_text)
@@ -87,9 +72,7 @@ async def handle_group_message(update: Update, context: ContextTypes.DEFAULT_TYP
             pirate_reply = generate_pirate_response(query)
             await update.message.reply_text(pirate_reply)
         else:
-            await update.message.reply_text(
-                "Aye, ye called? What be yer query, matey? 🏴‍☠️"
-            )
+            await update.message.reply_text("Aye, ye called? What be yer query, matey?")
 
 async def handle_private_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle messages in private chats."""
