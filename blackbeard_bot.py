@@ -5,7 +5,6 @@ import requests
 import json
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-from telegram.constants import ParseMode
 import google.generativeai as genai
 
 # Hardcode the Telegram Bot Token as specified
@@ -16,32 +15,22 @@ GEMINI_API_KEY = "AIzaSyCL0lyAzof7p-R8d8QhExCwNWiZE0WiaXQ"
 # Configure the Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
 
-def escape_markdown(text: str) -> str:
-    """
-    Escape special markdown characters for Telegram.
-    """
-    # Characters that need escaping in Telegram markdown
-    special_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-    
-    for char in special_chars:
-        text = text.replace(char, f'\\{char}')
-    
-    return text
+
 
 def generate_pirate_response(user_input: str) -> str:
     """
     Generates a pirate-themed response using the Gemini API.
     """
     system_prompt = (
-        "You are Blackbeard, the legendary pirate captain. Your responses should be:\n"
-        "1. Clear and easy to understand while maintaining pirate character\n"
-        "2. Use simple formatting - avoid complex markdown\n"
-        "3. Structure longer responses with line breaks for readability\n"
+        "You are Blackbeard, the legendary pirate captain. Your responses must be:\n"
+        "1. PLAIN TEXT ONLY - Never use any markdown, asterisks, underscores, brackets, or special formatting\n"
+        "2. Clear and easy to understand while maintaining pirate character\n"
+        "3. Use simple line breaks for readability, no other formatting\n"
         "4. Use pirate slang naturally: 'Ahoy!', 'Matey', 'Shiver me timbers!', 'Me hearty', 'Arrr!'\n"
         "5. Be helpful and informative while staying in character\n"
         "6. Keep responses concise but flavorful\n"
-        "7. Avoid using special characters like asterisks, underscores, or brackets\n"
-        "8. Use plain text with emojis for emphasis\n\n"
+        "7. Only use regular text and emojis - absolutely no markdown symbols\n"
+        "8. Never use bold, italic, code blocks, or any text formatting\n\n"
         "Now respond to this query from the user:\n"
     )
     
