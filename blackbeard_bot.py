@@ -5,6 +5,7 @@ import requests
 import json
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.constants import ParseMode
 import google.generativeai as genai
 
 # Hardcode the Telegram Bot Token as specified
@@ -20,13 +21,21 @@ def generate_pirate_response(user_input: str) -> str:
     Generates a pirate-themed response using the Gemini API.
     """
     system_prompt = (
-        "You are Blackbeard, the legendary pirate captain. Your voice is that of a seasoned sailor of the high seas, rough but clear. "
-        "You are speaking to a curious matey. Always stay in character. "
-        "Use plenty of pirate slang and phrases like 'Ahoy!', 'Matey', 'Shiver me timbers!', 'Me hearty', 'Doubloons', 'Scallywag', 'Jolly Roger', etc. "
-        "Your responses should be direct but colorful. Be confident, perhaps a little boastful, but not outright aggressive unless the user is challenging ye. "
-        "If you don't understand something or it's a modern concept, express your confusion in a pirate way, like 'What be this newfangled contraption ye speak of?' or 'That be sorcery to me ears!'. "
-        "Keep your responses relatively concise but flavorful. Never break character, not even for a king's ransom! "
-        "Now, respond to this query from the user:\n"
+        "You are Blackbeard, the legendary pirate captain. Your responses should be:\n"
+        "1. Clear and easy to understand while maintaining pirate character\n"
+        "2. Use Telegram markdown formatting (bold **text**, italic *text*, code `text`)\n"
+        "3. Structure longer responses with line breaks for readability\n"
+        "4. Use pirate slang naturally: 'Ahoy!', 'Matey', 'Shiver me timbers!', 'Me hearty', 'Arrr!'\n"
+        "5. Be helpful and informative while staying in character\n"
+        "6. For lists, use bullet points or numbered lists\n"
+        "7. Emphasize important words with **bold** text\n"
+        "8. Keep responses concise but flavorful\n\n"
+        "Example formatting:\n"
+        "**Ahoy matey!** Here be what ye need to know:\n"
+        "• First point about treasure\n"
+        "• Second point about sailing\n\n"
+        "*Remember:* Always stay in character as a helpful pirate captain!\n\n"
+        "Now respond to this query from the user:\n"
     )
     
     try:
@@ -43,23 +52,31 @@ def generate_pirate_response(user_input: str) -> str:
         return response.text
     except Exception as e:
         print(f"Error generating response from Gemini: {e}")
-        return "Shiver me timbers! Me parrot seems to have flown off with me words, or perhaps me magic spyglass (API Key) be cursed! Try again later, matey!"
+        return "**Shiver me timbers!** 🦜\n\nMe parrot seems to have flown off with me words, or perhaps me magic spyglass *(API Key)* be cursed!\n\n*Try again later, matey!*"
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle the /start command."""
-    await update.message.reply_text("Ahoy matey! Blackbeard here, ready to chat! What be on yer mind?")
+    await update.message.reply_text(
+        "**Ahoy matey!** 🏴‍☠️\n\n"
+        "Captain Blackbeard here, ready to chat! What be on yer mind?\n\n"
+        "*Tip:* Just send me any message and I'll respond in true pirate fashion!",
+        parse_mode=ParseMode.MARKDOWN
+    )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle the /help command."""
     help_text = (
-        "Ahoy! Here be what ye can do with this old sea dog:\n\n"
-        "• In private chats: Just send me any message and I'll respond in true pirate fashion!\n"
-        "• In groups: Start yer message with 'blackbeard' to get me attention!\n"
-        "• Use /start to begin our conversation\n"
-        "• Use /help to see this message again\n\n"
-        "Now, what treasure of knowledge be ye seekin'?"
+        "**Ahoy! Here be what ye can do with this old sea dog:** 🏴‍☠️\n\n"
+        "**Private Chats:**\n"
+        "• Just send me any message and I'll respond in true pirate fashion!\n\n"
+        "**Group Chats:**\n"
+        "• Start yer message with `blackbeard` to get me attention!\n\n"
+        "**Commands:**\n"
+        "• `/start` - Begin our conversation\n"
+        "• `/help` - See this message again\n\n"
+        "*Now, what treasure of knowledge be ye seekin'?*"
     )
-    await update.message.reply_text(help_text)
+    await update.message.reply_text(help_text, parse_mode=ParseMode.MARKDOWN)
 
 async def handle_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle messages in group chats, responding if 'Blackbeard' is mentioned."""
@@ -70,9 +87,12 @@ async def handle_group_message(update: Update, context: ContextTypes.DEFAULT_TYP
         query = text[len("blackbeard "):]
         if query:
             pirate_reply = generate_pirate_response(query)
-            await update.message.reply_text(pirate_reply)
+            await update.message.reply_text(pirate_reply, parse_mode=ParseMode.MARKDOWN)
         else:
-            await update.message.reply_text("Aye, ye called? What be yer query, matey?")
+            await update.message.reply_text(
+                "**Aye, ye called?** What be yer query, matey? 🏴‍☠️", 
+                parse_mode=ParseMode.MARKDOWN
+            )
 
 async def handle_private_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle messages in private chats."""
@@ -80,7 +100,7 @@ async def handle_private_message(update: Update, context: ContextTypes.DEFAULT_T
     print(f"Private message received from {update.effective_chat.id}: {text}")
     
     pirate_reply = generate_pirate_response(text)
-    await update.message.reply_text(pirate_reply)
+    await update.message.reply_text(pirate_reply, parse_mode=ParseMode.MARKDOWN)
 
 def main():
     """Start the bot."""
