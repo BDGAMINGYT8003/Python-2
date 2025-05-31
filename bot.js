@@ -2,9 +2,9 @@
 const TelegramBot = require('node-telegram-bot-api');
 const sqlite3 = require('sqlite3').verbose();
 const express = require('express');
-const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
+// Using built-in fetch (available in Node.js 18+)
 
 // Hardcoded credentials as specified
 const TELEGRAM_BOT_TOKEN = "7947606721:AAGxfrYl1HI86IRkYKbIyhwkmq4cu2Pb-vo";
