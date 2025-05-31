@@ -1,3 +1,2 @@
-python-telegraph
+python-telegram-bot
 google-generativeai
-telegraph

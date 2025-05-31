@@ -13,3 +13,15 @@ requiredFiles = [".replit", "replit.nix"]
 [deployment]
 run = ["python3", "blackbeard_bot.py"]
 deploymentTarget = "cloudrun"
+
+[workflows]
+runButton = "Run Blackbeard Bot"
+
+[[workflows.workflow]]
+name = "Run Blackbeard Bot"
+author = 37077700
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python blackbeard_bot.py"
